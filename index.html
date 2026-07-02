@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BizPlan AI</title>
-    <!-- Подключаем React для работы без сборщика -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -48,7 +47,6 @@
             setStep(3);
 
             try {
-              // Запрос на твой сервер Railway
               const response = await fetch("https://my-backend-production-05d4.up.railway.app/generate", {
                 method: "POST",
                 headers: {
@@ -69,7 +67,7 @@
               setPlan(data.plan || data);
               setStep(4);
             } catch (err) {
-              setError("Ошибка генерации. Проверь, что бэкенд запущен.");
+              setError("Сервер временно перегружен. Пожалуйста, повторите попытку через минуту.");
               setStep(2);
             } finally {
               setLoading(false);
@@ -112,7 +110,7 @@
                   Бизнес-план<br />от А до Я
                 </h1>
                 <p style={{ color: "#5a5a7a", marginTop: 12, fontSize: 14, lineHeight: 1.6 }}>
-                  Скажи идею и бюджет — получишь готовый план за 30 секунд
+                  Скажи идею и budget — получишь готовый план за 30 секунд
                 </p>
               </div>
 
@@ -188,7 +186,6 @@
                 {/* STEP 4: Result */}
                 {currentStep === "result" && plan && (
                   <div>
-                    {/* Title card */}
                     <div style={{ background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)", border: "1px solid #2a2a4a", borderRadius: 16, padding: "28px 24px", marginBottom: 24 }}>
                       <div style={{ display: "inline-block", padding: "4px 12px", borderRadius: 20, background: viabilityColor[plan.viability] + "20", color: viabilityColor[plan.viability], fontSize: 12, fontWeight: 600, marginBottom: 12 }}>{viabilityLabel[plan.viability]}</div>
                       <h2 style={{ margin: 0, fontSize: 24, fontWeight: 700, color: "#e8e6e1" }}>{plan.title}</h2>
@@ -196,7 +193,6 @@
                       <p style={{ margin: "12px 0 0", color: "#6b6b8a", fontSize: 13 }}>{plan.viability_note}</p>
                     </div>
 
-                    {/* Sections */}
                     {plan.sections?.map((section, i) => (
                       <div key={i} style={{ background: "#16161f", border: "1px solid #1e1e28", borderRadius: 12, padding: "20px", marginBottom: 12 }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
@@ -207,7 +203,6 @@
                       </div>
                     ))}
 
-                    {/* Timeline */}
                     {plan.timeline && (
                       <div style={{ background: "#16161f", border: "1px solid #1e1e28", borderRadius: 12, padding: "20px", marginBottom: 12 }}>
                         <h3 style={{ margin: "0 0 16px", fontSize: 15, fontWeight: 600, color: "#c4c2be" }}>📅 Timeline</h3>
@@ -220,7 +215,6 @@
                       </div>
                     )}
 
-                    {/* First action */}
                     {plan.first_action && (
                       <div style={{ background: "#1a0f2e", border: "1px solid #3b2a6a", borderRadius: 12, padding: "20px", marginBottom: 24 }}>
                         <div style={{ fontSize: 11, color: "#8b5cf6", letterSpacing: 2, textTransform: "uppercase", marginBottom: 8 }}>Первое действие — сегодня</div>
