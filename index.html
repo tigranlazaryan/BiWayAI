@@ -1,97 +1,243 @@
-import { useState } from "react";
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BizPlan AI</title>
+    <!-- Подключаем React для работы без сборщика -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body style="background-color: #0f0f13; margin: 0; padding: 0;">
+    <div id="root"></div>
 
-const STEPS = ["idea", "budget", "details", "generating", "result"];
-const currencies = ["USD", "AMD", "RUB", "EUR"];
-const sectionIcons = {
-  "Суть бизнеса": "💡",
-  "Анализ рынка": "📊",
-  "Первые шаги": "🚀",
-  "Бюджет и расходы": "💰",
-  "Как привлечь клиентов": "📣",
-  "Риски и как их избежать": "⚠️",
-  "Прогноз дохода": "📈",
-  "Итог": "✅",
-};
+    <script type="text/babel">
+        const { useState } = React;
 
-export default function BizPlanApp() {
-  const [step, setStep] = useState(0);
-  const [idea, setIdea] = useState("");
-  const [budget, setBudget] = useState("");
-  const [currency, setCurrency] = useState("USD");
-  const [experience, setExperience] = useState("");
-  const [location, setLocation] = useState("Армения");
-  const [plan, setPlan] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-
-  const currentStep = STEPS[step];
-
-  // ЭТА ФУНКЦИЯ ТЕПЕРЬ СВЯЗАНА С ТВОИМ РЕАЛЬНЫМ СЕРВЕРОМ
-  async function generatePlan() {
-    setLoading(true);
-    setError("");
-    setStep(3);
-
-    try {
-      const response = await fetch("https://my-backend-production-05d4.up.railway.app/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          idea, 
-          budget, 
-          currency, 
-          experience, 
-          location 
-        }),
-      });
-
-      if (!response.ok) throw new Error("Ошибка сервера");
-
-      const data = await response.json();
-      setPlan(data.plan || data);
-      setStep(4);
-    } catch (err) {
-      console.error(err);
-      setError("Ошибка соединения. Проверьте Railway.");
-      setStep(2);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  function reset() {
-    setStep(0);
-    setIdea("");
-    setBudget("");
-    setCurrency("USD");
-    setExperience("");
-    setLocation("Армения");
-    setPlan(null);
-    setError("");
-  }
-
-  const viabilityColor = { high: "#22c55e", medium: "#f59e0b", low: "#ef4444" };
-  const viabilityLabel = { high: "Высокая жизнеспособность", medium: "Средняя жизнеспособность", low: "Высокий риск" };
-
-  return (
-    <div style={{ minHeight: "100vh", background: "#0f0f13", color: "#e8e6e1", fontFamily: "'Inter', 'Segoe UI', sans-serif", display: "flex", flexDirection: "column", alignItems: "center", padding: "0 16px 60px" }}>
-      {/* ... (далее идет твой неизменный интерфейс, который я сохранил) */}
-      <div style={{ width: "100%", maxWidth: 680, paddingTop: 48, paddingBottom: 32, borderBottom: "1px solid #1e1e28", marginBottom: 40 }}>
-        <div style={{ fontSize: 11, letterSpacing: 3, color: "#5a5a7a", textTransform: "uppercase", marginBottom: 12 }}>BizPlan AI</div>
-        <h1 style={{ fontSize: 32, fontWeight: 700, margin: 0, lineHeight: 1.2, background: "linear-gradient(135deg, #e8e6e1 0%, #8b5cf6 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Бизнес-план<br />от А до Я</h1>
-      </div>
-
-      <div style={{ width: "100%", maxWidth: 680 }}>
-        {currentStep === "idea" && (
-          <div>
-            <textarea value={idea} onChange={(e) => setIdea(e.target.value)} placeholder="Твоя идея..." rows={5} style={{ width: "100%", marginTop: 12, background: "#16161f", border: "1px solid #2a2a3a", borderRadius: 12, color: "#e8e6e1", fontSize: 16, padding: "16px", outline: "none" }} />
-            <button onClick={() => idea.trim().length > 5 && setStep(1)} style={{ marginTop: 20, width: "100%", padding: "16px", background: idea.trim().length > 5 ? "#8b5cf6" : "#2a2a3a", color: "#fff", border: "none", borderRadius: 12, fontSize: 16, fontWeight: 600, cursor: "pointer" }}>Далее →</button>
-          </div>
-        )}
+        const STEPS = ["idea", "budget", "details", "generating", "result"];
+        const currencies = ["USD", "AMD", "RUB", "EUR"];
         
-        {/* Остальные части интерфейса (STEP 1, 2, 3, 4) оставь как были в твоем коде, 
-            просто вставь этот верхний блок с исправленным generatePlan() */}
-      </div>
-    </div>
-  );
-}
+        const sectionIcons = {
+          "Суть бизнеса": "💡",
+          "Анализ рынка": "📊",
+          "Первые шаги": "🚀",
+          "Бюджет и расходы": "💰",
+          "Как привлечь клиентов": "📣",
+          "Риски и как их избежать": "⚠️",
+          "Прогноз дохода": "📈",
+          "Итог": "✅",
+        };
+
+        function BizPlanApp() {
+          const [step, setStep] = useState(0);
+          const [idea, setIdea] = useState("");
+          const [budget, setBudget] = useState("");
+          const [currency, setCurrency] = useState("USD");
+          const [experience, setExperience] = useState("");
+          const [location, setLocation] = useState("Армения");
+          const [plan, setPlan] = useState(null);
+          const [loading, setLoading] = useState(false);
+          const [error, setError] = useState("");
+
+          const currentStep = STEPS[step];
+
+          async function generatePlan() {
+            setLoading(true);
+            setError("");
+            setStep(3);
+
+            try {
+              // Запрос на твой сервер Railway
+              const response = await fetch("https://my-backend-production-05d4.up.railway.app/generate", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  idea,
+                  budget,
+                  currency,
+                  experience,
+                  location
+                }),
+              });
+
+              if (!response.ok) throw new Error("Ошибка сервера");
+
+              const data = await response.json();
+              setPlan(data.plan || data);
+              setStep(4);
+            } catch (err) {
+              setError("Ошибка генерации. Проверь, что бэкенд запущен.");
+              setStep(2);
+            } finally {
+              setLoading(false);
+            }
+          }
+
+          function reset() {
+            setStep(0);
+            setIdea("");
+            setBudget("");
+            setCurrency("USD");
+            setExperience("");
+            setLocation("Армения");
+            setPlan(null);
+            setError("");
+          }
+
+          const viabilityColor = { high: "#22c55e", medium: "#f59e0b", low: "#ef4444" };
+          const viabilityLabel = { high: "Высокая жизнеспособность", medium: "Средняя жизнеспособность", low: "Высокий риск" };
+
+          return (
+            <div style={{
+              minHeight: "100vh",
+              background: "#0f0f13",
+              color: "#e8e6e1",
+              fontFamily: "'Inter', 'Segoe UI', sans-serif",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              padding: "0 16px 60px",
+            }}>
+              {/* Header */}
+              <div style={{
+                width: "100%", maxWidth: 680, paddingTop: 48, paddingBottom: 32, borderBottom: "1px solid #1e1e28", marginBottom: 40,
+              }}>
+                <div style={{ fontSize: 11, letterSpacing: 3, color: "#5a5a7a", textTransform: "uppercase", marginBottom: 12 }}>
+                  BizPlan AI
+                </div>
+                <h1 style={{ fontSize: 32, fontWeight: 700, margin: 0, lineHeight: 1.2, background: "linear-gradient(135deg, #e8e6e1 0%, #8b5cf6 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+                  Бизнес-план<br />от А до Я
+                </h1>
+                <p style={{ color: "#5a5a7a", marginTop: 12, fontSize: 14, lineHeight: 1.6 }}>
+                  Скажи идею и бюджет — получишь готовый план за 30 секунд
+                </p>
+              </div>
+
+              <div style={{ width: "100%", maxWidth: 680 }}>
+                {/* STEP 0: Idea */}
+                {currentStep === "idea" && (
+                  <div>
+                    <label style={{ fontSize: 13, color: "#8b8ba8", letterSpacing: 1, textTransform: "uppercase" }}>Твоя идея</label>
+                    <textarea
+                      value={idea}
+                      onChange={(e) => setIdea(e.target.value)}
+                      placeholder="Например: хочу открыть кофейню, заниматься флипом телефонов, сделать онлайн-школу английского..."
+                      rows={5}
+                      style={{ width: "100%", marginTop: 12, background: "#16161f", border: "1px solid #2a2a3a", borderRadius: 12, color: "#e8e6e1", fontSize: 16, padding: "16px", resize: "vertical", outline: "none", lineHeight: 1.6, boxSizing: "border-box" }}
+                      onFocus={(e) => e.target.style.borderColor = "#8b5cf6"}
+                      onBlur={(e) => e.target.style.borderColor = "#2a2a3a"}
+                    />
+                    <button
+                      onClick={() => idea.trim().length > 5 && setStep(1)}
+                      style={{ marginTop: 20, width: "100%", padding: "16px", background: idea.trim().length > 5 ? "#8b5cf6" : "#2a2a3a", color: idea.trim().length > 5 ? "#fff" : "#5a5a7a", border: "none", borderRadius: 12, fontSize: 16, fontWeight: 600, cursor: idea.trim().length > 5 ? "pointer" : "not-allowed", transition: "all 0.2s" }}
+                    >
+                      Далее →
+                    </button>
+                  </div>
+                )}
+
+                {/* STEP 1: Budget */}
+                {currentStep === "budget" && (
+                  <div>
+                    <label style={{ fontSize: 13, color: "#8b8ba8", letterSpacing: 1, textTransform: "uppercase" }}>Бюджет на инвестиции</label>
+                    <div style={{ display: "flex", gap: 12, marginTop: 12 }}>
+                      <input type="number" value={budget} onChange={(e) => setBudget(e.target.value)} placeholder="2000" style={{ flex: 1, background: "#16161f", border: "1px solid #2a2a3a", borderRadius: 12, color: "#e8e6e1", fontSize: 20, padding: "16px", outline: "none" }} onFocus={(e) => e.target.style.borderColor = "#8b5cf6"} onBlur={(e) => e.target.style.borderColor = "#2a2a3a"} />
+                      <select value={currency} onChange={(e) => setCurrency(e.target.value)} style={{ background: "#16161f", border: "1px solid #2a2a3a", borderRadius: 12, color: "#e8e6e1", fontSize: 16, padding: "16px", outline: "none", cursor: "pointer" }}>
+                        {currencies.map((c) => <option key={c}>{c}</option>)}
+                      </select>
+                    </div>
+
+                    <label style={{ fontSize: 13, color: "#8b8ba8", letterSpacing: 1, textTransform: "uppercase", display: "block", marginTop: 24 }}>Локация</label>
+                    <input value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Армения, Ереван..." style={{ width: "100%", marginTop: 12, background: "#16161f", border: "1px solid #2a2a3a", borderRadius: 12, color: "#e8e6e1", fontSize: 16, padding: "16px", outline: "none", boxSizing: "border-box" }} onFocus={(e) => e.target.style.borderColor = "#8b5cf6"} onBlur={(e) => e.target.style.borderColor = "#2a2a3a"} />
+
+                    <div style={{ display: "flex", gap: 12, marginTop: 20 }}>
+                      <button onClick={() => setStep(0)} style={{ padding: "16px 24px", background: "#16161f", border: "1px solid #2a2a3a", borderRadius: 12, color: "#8b8ba8", fontSize: 16, cursor: "pointer" }}>← Назад</button>
+                      <button onClick={() => budget > 0 && setStep(2)} style={{ flex: 1, padding: "16px", background: budget > 0 ? "#8b5cf6" : "#2a2a3a", color: budget > 0 ? "#fff" : "#5a5a7a", border: "none", borderRadius: 12, fontSize: 16, fontWeight: 600, cursor: budget > 0 ? "pointer" : "not-allowed" }}>Далее →</button>
+                    </div>
+                  </div>
+                )}
+
+                {/* STEP 2: Details */}
+                {currentStep === "details" && (
+                  <div>
+                    <label style={{ fontSize: 13, color: "#8b8ba8", letterSpacing: 1, textTransform: "uppercase" }}>Твой опыт / навыки (необязательно)</label>
+                    <textarea value={experience} onChange={(e) => setExperience(e.target.value)} placeholder="Например: умею программировать, есть опыт в продажах, разбираюсь в соцсетях..." rows={3} style={{ width: "100%", marginTop: 12, background: "#16161f", border: "1px solid #2a2a3a", borderRadius: 12, color: "#e8e6e1", fontSize: 16, padding: "16px", resize: "vertical", outline: "none", lineHeight: 1.6, boxSizing: "border-box" }} onFocus={(e) => e.target.style.borderColor = "#8b5cf6"} onBlur={(e) => e.target.style.borderColor = "#2a2a3a"} />
+                    
+                    {error && <div style={{ marginTop: 12, padding: 12, background: "#2a1a1a", borderRadius: 8, color: "#ef4444", fontSize: 14 }}>{error}</div>}
+
+                    <div style={{ display: "flex", gap: 12, marginTop: 20 }}>
+                      <button onClick={() => setStep(1)} style={{ padding: "16px 24px", background: "#16161f", border: "1px solid #2a2a3a", borderRadius: 12, color: "#8b8ba8", fontSize: 16, cursor: "pointer" }}>← Назад</button>
+                      <button onClick={generatePlan} style={{ flex: 1, padding: "16px", background: "linear-gradient(135deg, #8b5cf6, #6d28d9)", color: "#fff", border: "none", borderRadius: 12, fontSize: 16, fontWeight: 700, cursor: "pointer" }}>✨ Сгенерировать план</button>
+                    </div>
+                  </div>
+                )}
+
+                {/* STEP 3: Loading */}
+                {currentStep === "generating" && (
+                  <div style={{ textAlign: "center", padding: "60px 0" }}>
+                    <div style={{ width: 64, height: 64, borderRadius: "50%", border: "3px solid #2a2a3a", borderTop: "3px solid #8b5cf6", animation: "spin 1s linear infinite", margin: "0 auto 24px" }} />
+                    <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+                    <p style={{ color: "#8b8ba8", fontSize: 16 }}>Анализируем рынок и составляем план...</p>
+                    <p style={{ color: "#5a5a7a", fontSize: 13, marginTop: 8 }}>Обычно занимает 15–30 секунд</p>
+                  </div>
+                )}
+
+                {/* STEP 4: Result */}
+                {currentStep === "result" && plan && (
+                  <div>
+                    {/* Title card */}
+                    <div style={{ background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)", border: "1px solid #2a2a4a", borderRadius: 16, padding: "28px 24px", marginBottom: 24 }}>
+                      <div style={{ display: "inline-block", padding: "4px 12px", borderRadius: 20, background: viabilityColor[plan.viability] + "20", color: viabilityColor[plan.viability], fontSize: 12, fontWeight: 600, marginBottom: 12 }}>{viabilityLabel[plan.viability]}</div>
+                      <h2 style={{ margin: 0, fontSize: 24, fontWeight: 700, color: "#e8e6e1" }}>{plan.title}</h2>
+                      <p style={{ margin: "8px 0 0", color: "#8b8ba8", fontSize: 15 }}>{plan.tagline}</p>
+                      <p style={{ margin: "12px 0 0", color: "#6b6b8a", fontSize: 13 }}>{plan.viability_note}</p>
+                    </div>
+
+                    {/* Sections */}
+                    {plan.sections?.map((section, i) => (
+                      <div key={i} style={{ background: "#16161f", border: "1px solid #1e1e28", borderRadius: 12, padding: "20px", marginBottom: 12 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                          <span style={{ fontSize: 20 }}>{sectionIcons[section.title] || "📌"}</span>
+                          <h3 style={{ margin: 0, fontSize: 15, fontWeight: 600, color: "#c4c2be" }}>{section.title}</h3>
+                        </div>
+                        <p style={{ margin: 0, color: "#8b8ba8", fontSize: 14, lineHeight: 1.7, whiteSpace: "pre-wrap" }}>{section.content}</p>
+                      </div>
+                    ))}
+
+                    {/* Timeline */}
+                    {plan.timeline && (
+                      <div style={{ background: "#16161f", border: "1px solid #1e1e28", borderRadius: 12, padding: "20px", marginBottom: 12 }}>
+                        <h3 style={{ margin: "0 0 16px", fontSize: 15, fontWeight: 600, color: "#c4c2be" }}>📅 Timeline</h3>
+                        {plan.timeline.map((t, i) => (
+                          <div key={i} style={{ display: "flex", gap: 16, marginBottom: i < plan.timeline.length - 1 ? 16 : 0 }}>
+                            <div style={{ minWidth: 90, fontSize: 11, fontWeight: 700, color: "#8b5cf6", textTransform: "uppercase", letterSpacing: 0.5, paddingTop: 2 }}>{t.period}</div>
+                            <div style={{ color: "#8b8ba8", fontSize: 14, lineHeight: 1.5 }}>{t.action}</div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* First action */}
+                    {plan.first_action && (
+                      <div style={{ background: "#1a0f2e", border: "1px solid #3b2a6a", borderRadius: 12, padding: "20px", marginBottom: 24 }}>
+                        <div style={{ fontSize: 11, color: "#8b5cf6", letterSpacing: 2, textTransform: "uppercase", marginBottom: 8 }}>Первое действие — сегодня</div>
+                        <p style={{ margin: 0, color: "#c4b5fd", fontSize: 15, fontWeight: 500, lineHeight: 1.6 }}>{plan.first_action}</p>
+                      </div>
+                    )}
+
+                    <button onClick={reset} style={{ width: "100%", padding: "16px", background: "#16161f", border: "1px solid #2a2a3a", borderRadius: 12, color: "#8b8ba8", fontSize: 16, cursor: "pointer" }}>← Новый план</button>
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<BizPlanApp />);
+    </script>
+</body>
+</html>
